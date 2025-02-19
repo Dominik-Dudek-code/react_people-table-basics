@@ -6,14 +6,15 @@ import { People } from '../People/People';
 import { useParams } from 'react-router-dom';
 
 export const PeopleList: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [people, setPeople] = useState<Person[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [people, setPeople] = useState<Person[]>([]);
   const [selectedPerson, setSelectedPerson] = useState<string | null>(null);
   const { personId } = useParams();
 
   useEffect(() => {
     setIsLoading(true);
+    setPeople([]);
 
     getPeople()
       .then(data => {
@@ -37,7 +38,7 @@ export const PeopleList: React.FC = () => {
       })
       .catch(() => {
         setIsError(true);
-        setPeople(null);
+        setPeople([]);
       })
       .finally(() => {
         setIsLoading(false);
@@ -45,9 +46,7 @@ export const PeopleList: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!personId) {
-      return;
-    } else {
+    if (personId) {
       setSelectedPerson(personId);
     }
   }, [personId]);
@@ -66,7 +65,7 @@ export const PeopleList: React.FC = () => {
           </>
         )}
 
-        {!isLoading && !isError && (people === null || people.length === 0) && (
+        {!isLoading && !people?.length && (
           <p data-cy="noPeopleMessage">There are no people on the server</p>
         )}
 
